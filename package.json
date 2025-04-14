@@ -1,18 +1,17 @@
 {
-  "name": "puppeteer-render",
+  "name": "n8n-render",
   "version": "1.0.0",
-  "description": "",
+  "description": "n8n workflow automation on Render",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index"
+    "start": "n8n start",
+    "build": "echo 'Installing n8n'"
   },
-  "keywords": [],
+  "keywords": ["n8n", "automation", "workflow"],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
+    "n8n": "^1.23.0",
     "puppeteer": "^19.7.2"
   }
 }
