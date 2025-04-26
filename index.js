@@ -1,15 +1,15 @@
 const express = require("express");
-const { scrapeLogic } = require("./scrapeLogic");
+const { buy } = require("./buy");
 const app = express();
 
 const PORT = process.env.PORT || 4000;
-
-app.get("/scrape", (req, res) => {
-  scrapeLogic(res);
+//for send buy signal
+app.get("/buy", (req, res) => {
+  buy(req,res);
 });
 
 app.get("/", (req, res) => {
-  res.send("Render Puppeteer server is up and running!");
+  res.send("Active");
 });
 
 app.listen(PORT, () => {
