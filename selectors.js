@@ -1,0 +1,22 @@
+module.exports = {
+    loginGmailText:'[plerdy-tracking-id="25891014701"]',
+    loginPasswordText:'[plerdy-tracking-id="34199228101"]',
+    loginMasukButton:'[plerdy-tracking-id="53396253401"]',
+    masukkanPINTitle:'[data-testid="pin-title"]',
+    pinAjaib1:'[plerdy-tracking-id="29905954201"]',
+    pinAjaib2:'[plerdy-tracking-id="37935991801"]',
+    pinAjaib3:'[plerdy-tracking-id="37935991802"]',
+    pinAjaib4:'[plerdy-tracking-id="37935991803"]',
+    mengertiButton:'[plerdy-tracking-id="29227868401"]',
+    cariAssetSearchBox:'[plerdy-tracking-id="70613876501"]',
+    dayTradingButton:'[plerdy-tracking-id="86913280101"]',
+    inputPriceBox:'[plerdy-tracking-id="48630356201"]', //get value
+    dayTrade100PercentBuyingPower:'[plerdy-tracking-id="53637093701"]',
+    BeliButton:'[data-testid="btn-submitBuy"]',
+    jualButton:'[data-testid="btn-submitSell"]',
+    beliButtonTab:'[plerdy-tracking-id="80673511701"]',
+    jualButtonTab:'[plerdy-tracking-id="80643055701"]',
+    priceNow:'[data-testid="txt-price"]',
+    beliPopUp:'[data-testid="btn-confirmBuy"]',
+    jualPopUp:'[data-testid="btn-confirmSell"]',
+};
