@@ -71,15 +71,15 @@ const buy = async (req,res) => {
     const page = await browser.newPage();
 
     // Navigate to a website
-    await page.goto('https://login.ajaib.co.id/login',{waitUntil: 'load'}); // Replace with your desired URL
+    await page.goto(process.env.AJ_LINK,{waitUntil: 'load'}); // Replace with your desired URL
 
     // Wait for some element (adjust the selector based on the page)
     await page.waitForSelector(selectors.loginGmailText);
     const LoginGmailInput = await page.$(selectors.loginGmailText);
     const loginPasswordInput = await page.$(selectors.loginPasswordText);
     const Loginbutton= await page.$(selectors.loginMasukButton);
-    await LoginGmailInput.type('nadirafm23@gmail.com');
-    await loginPasswordInput.type('2III0VII0i.');
+    await LoginGmailInput.type(process.env.AJ_GMAIL);
+    await loginPasswordInput.type(process.env.AJ_PASSWORD);
     await Loginbutton.click();
     await clickAndWaitForUrl(page,'/pin');
     await page.waitForSelector(selectors.pinAjaib1, { timeout : 3000 });
@@ -87,10 +87,10 @@ const buy = async (req,res) => {
     const pinAjaibVar2 = await page.$(selectors.pinAjaib2);
     const pinAjaibVar3 = await page.$(selectors.pinAjaib3);
     const pinAjaibVar4 = await page.$(selectors.pinAjaib4);
-    await pinAjaibVar1.type('2');
-    await pinAjaibVar2.type('5');
-    await pinAjaibVar3.type('1');
-    await pinAjaibVar4.type('1');
+    await pinAjaibVar1.type(process.env.AJ_PIN_1);
+    await pinAjaibVar2.type(process.env.AJ_PIN_2);
+    await pinAjaibVar3.type(process.env.AJ_PIN_3);
+    await pinAjaibVar4.type(process.env.AJ_PIN_4);
     await clickAndWaitForUrl(page,'/home');
     await delay(1000);
     while (true) {
