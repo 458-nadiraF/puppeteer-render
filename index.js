@@ -28,12 +28,6 @@ const launchBrowser = async () => {
   page = await browser.newPage();
 
   // Set a timeout to close the browser after 5 minutes (300000ms)
-  browserTimeout = setTimeout(async () => {
-    console.log('Browser timeout reached. Closing the browser.');
-    await browser.close();
-    browser = null;
-    page = null;
-  }, 300000); // 5 minutes
 };
 
 // Route for /bersiap
