@@ -217,6 +217,8 @@ const buy = async (req,res) => {
         console.error('An error occurred:', error.message);
         console.error('Error Stack:', error.stack);
     }
+    const pageHTML = await page.content(); // Get the full HTML of the page
+    console.log('Full HTML of the page:', pageHTML);
     try {
         await clickAndWaitForUrlEvenJustChange(page,'/saham/');
         await delay(1000);
