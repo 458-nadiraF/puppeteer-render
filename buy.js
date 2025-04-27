@@ -217,8 +217,21 @@ const buy = async (req,res) => {
         console.error('An error occurred:', error.message);
         console.error('Error Stack:', error.stack);
     }
-    const pageHTML = await page.content(); // Get the full HTML of the page
-    console.log('Full HTML of the page:', pageHTML);
+    // const pageHTML = await page.content(); // Get the full HTML of the page
+    // console.log('Full HTML of the page:', pageHTML);
+    try{
+    const screenshotBuffer = await page.screenshot();
+
+    // Close the browser
+    // await browser.close();
+
+    // Send the screenshot in the response with the appropriate MIME type
+    res.set('Content-Type', 'image/png');
+    res.send(screenshotBuffer); // Send the screenshot as the response
+    } catch (error){
+        console.error('An error occurred:', error.message);
+        console.error('Error Stack:', error.stack);
+    }
     try {
         await clickAndWaitForUrlEvenJustChange(page,'/saham/');
         await delay(1000);
