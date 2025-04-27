@@ -15,7 +15,72 @@ async function clickByClass(page, className) {
       console.error(`Error clicking element with class ${className}:`, error);
       return false;
     }
+}
+// Define getdivisor function
+function getdivisor(priceini) {
+  console.log('get divisor');
+  let price = parseInt(priceini, 10);
+  let divisor;
+  if (price < 200) {
+    divisor = 1;
+  } else if (200 <= price && price < 500) {
+    divisor = 2;
+  } else if (500 <= price && price < 2000) {
+    divisor = 5;
+  } else if (2000 <= price && price < 5000) {
+    divisor = 10;
+  } else {
+    divisor = 25;
   }
+  console.log('selesai get divisor');
+  return divisor;
+}
+
+// Define setgainloss function
+function setgainloss(pricei, loss, gain) {
+  console.log('set gain loss');
+  const divisor = getdivisor(pricei);
+  const price = parseInt(pricei, 10);
+
+  // Adjusting loss and gain based on the divisor
+  const losspp = (loss / 100);
+  const lossp = (1 - losspp);
+  const lossini = Math.floor(price * lossp); // Round down using Math.floor()
+  
+  const gainpp = (gain / 100);
+  const gainp = (1 + gainpp);
+  const gainini = Math.ceil(price * gainp); // Round up using Math.ceil()
+  
+  let adjusted_loss = lossini;
+  while (adjusted_loss % divisor !== 0) {
+    adjusted_loss -= 1;
+  }
+
+  let adjusted_gain = gainini;
+  while (adjusted_gain % divisor !== 0) {
+    adjusted_gain -= 1;
+  }
+
+  const divisorgain = getdivisor(adjusted_gain);
+  const divisorloss = getdivisor(adjusted_loss);
+  console.log('check lg');
+  if (divisorloss === divisor) {
+    if (divisorgain === divisor) {
+      // No adjustment needed
+    }
+  } else {
+    while (adjusted_loss % divisorloss !== 0) {
+      adjusted_loss -= 1;
+    }
+    if (divisorgain !== divisor) {
+      while (adjusted_gain % divisorgain !== 0) {
+        adjusted_gain -= 1;
+      }
+    }
+  }
+
+  return { adjusted_loss, adjusted_gain };
+}
 // Click element and wait for navigation to complete
 async function clickAndWaitForUrlEvenJustChange(page, urlPattern) {
   // Set up navigation promise before clicking
@@ -71,164 +136,138 @@ const buy = async (req,res) => {
     const page = await browser.newPage();
 
     // Navigate to a website
-    await page.goto(process.env.AJ_LINK,{waitUntil: 'load'}); // Replace with your desired URL
-
+    console.log('will open link');
+    try {
+        await page.goto('https://login.ajaib.co.id/login',{waitUntil: 'load'}); // Replace with your desired URL
+    } catch (error){
+        console.error('An error occurred:', error.message);
+    } finally {
+        console.log('link opened');
+    }
     // Wait for some element (adjust the selector based on the page)
-    await page.waitForSelector(selectors.loginGmailText);
-    const LoginGmailInput = await page.$(selectors.loginGmailText);
-    const loginPasswordInput = await page.$(selectors.loginPasswordText);
-    const Loginbutton= await page.$(selectors.loginMasukButton);
-    await LoginGmailInput.type(process.env.AJ_GMAIL);
-    await loginPasswordInput.type(process.env.AJ_PASSWORD);
-    await Loginbutton.click();
-    await clickAndWaitForUrl(page,'/pin');
-    await page.waitForSelector(selectors.pinAjaib1, { timeout : 3000 });
-    const pinAjaibVar1 = await page.$(selectors.pinAjaib1);
-    const pinAjaibVar2 = await page.$(selectors.pinAjaib2);
-    const pinAjaibVar3 = await page.$(selectors.pinAjaib3);
-    const pinAjaibVar4 = await page.$(selectors.pinAjaib4);
-    await pinAjaibVar1.type(process.env.AJ_PIN_1);
-    await pinAjaibVar2.type(process.env.AJ_PIN_2);
-    await pinAjaibVar3.type(process.env.AJ_PIN_3);
-    await pinAjaibVar4.type(process.env.AJ_PIN_4);
-    await clickAndWaitForUrl(page,'/home');
-    await delay(1000);
-    while (true) {
-        try {
-          // Wait for the element to be visible
-          const mengertiButton = await page.$(selectors.mengertiButton);
-          if (mengertiButton){
-            await mengertiButton.click();
-            await delay(2000);
-          }
-          else {
-            console.log('Element is no longer visible, stopping clicks.');
-            break
-          }
-    
-        } catch (error) {
-          // If the element is not found or visible anymore, break the loop
-          console.log('Error: Element is no longer visible, stopping clicks.');
-          break;
-        }
-      }
-    await page.waitForSelector(selectors.cariAssetSearchBox, { timeout : 3000 });
-    const StockNameInput = await page.$(selectors.cariAssetSearchBox);
-    await StockNameInput.type(stockName);
-    await delay(2000);
-    await clickByClass(page,'css-2b5fr2');
-    await clickAndWaitForUrlEvenJustChange(page,'/saham/');
-    await delay(1000);
-    const beliButtonTab = await page.$(selectors.beliButtonTab);
-    await beliButtonTab.click();
-    const DayTradeButton= await page.$(selectors.dayTradingButton);
-    await DayTradeButton.click();
-    const dayTrade100Button= await page.$(selectors.dayTrade100PercentBuyingPower);
-    await dayTrade100Button.click();
-    const BeliButton = await page.$(selectors.BeliButton);
-    await BeliButton.click();
-    await page.waitForSelector(selectors.beliPopUp);
-    const beliPopUpButton = await page.$(selectors.beliPopUp);
-    await beliPopUpButton.click();
-    await delay(10000);
-    const jualButtonTab=await page.$(selectors.jualButtonTab);
-    await jualButtonTab.click();
-    await DayTradeButton.click();
-    await dayTrade100Button.click();
-     // Get the price value from the page (e.g., input field or element containing price)
-    const priceText = await page.$eval(selectors.inputPriceBox, element => element.textContent || element.value);
-    
-    // Parse the price into an integer (e.g., 3780 as number)
-    let priceInt = parseInt(priceText.replace('.', ''), 10);
-
-    // Define getdivisor function
-    function getdivisor(priceini) {
-      console.log('get divisor');
-      let price = parseInt(priceini, 10);
-      let divisor;
-      if (price < 200) {
-        divisor = 1;
-      } else if (200 <= price && price < 500) {
-        divisor = 2;
-      } else if (500 <= price && price < 2000) {
-        divisor = 5;
-      } else if (2000 <= price && price < 5000) {
-        divisor = 10;
-      } else {
-        divisor = 25;
-      }
-      console.log('selesai get divisor');
-      return divisor;
+    try{
+        await page.waitForSelector(selectors.loginGmailText);
+        const LoginGmailInput = await page.$(selectors.loginGmailText);
+        const loginPasswordInput = await page.$(selectors.loginPasswordText);
+        const Loginbutton= await page.$(selectors.loginMasukButton);
+        await LoginGmailInput.type(process.env.AJ_GMAIL);
+        await loginPasswordInput.type(process.env.AJ_PASSWORD);
+        await Loginbutton.click();
+    } catch (error){
+        console.error('An error occurred:', error.message);
+    } finally {
+        console.log('succesfully loged');
     }
-
-    // Define setgainloss function
-    function setgainloss(pricei, loss, gain) {
-      console.log('set gain loss');
-      const divisor = getdivisor(pricei);
-      const price = parseInt(pricei, 10);
-
-      // Adjusting loss and gain based on the divisor
-      const losspp = (loss / 100);
-      const lossp = (1 - losspp);
-      const lossini = Math.floor(price * lossp); // Round down using Math.floor()
-      
-      const gainpp = (gain / 100);
-      const gainp = (1 + gainpp);
-      const gainini = Math.ceil(price * gainp); // Round up using Math.ceil()
-      
-      let adjusted_loss = lossini;
-      while (adjusted_loss % divisor !== 0) {
-        adjusted_loss -= 1;
-      }
-
-      let adjusted_gain = gainini;
-      while (adjusted_gain % divisor !== 0) {
-        adjusted_gain -= 1;
-      }
-
-      const divisorgain = getdivisor(adjusted_gain);
-      const divisorloss = getdivisor(adjusted_loss);
-      console.log('check lg');
-      if (divisorloss === divisor) {
-        if (divisorgain === divisor) {
-          // No adjustment needed
-        }
-      } else {
-        while (adjusted_loss % divisorloss !== 0) {
-          adjusted_loss -= 1;
-        }
-        if (divisorgain !== divisor) {
-          while (adjusted_gain % divisorgain !== 0) {
-            adjusted_gain -= 1;
-          }
-        }
-      }
-
-      return { adjusted_loss, adjusted_gain };
+    try {
+        await clickAndWaitForUrl(page,'/pin');
+        await page.waitForSelector(selectors.pinAjaib1, { timeout : 3000 });
+        const pinAjaibVar1 = await page.$(selectors.pinAjaib1);
+        const pinAjaibVar2 = await page.$(selectors.pinAjaib2);
+        const pinAjaibVar3 = await page.$(selectors.pinAjaib3);
+        const pinAjaibVar4 = await page.$(selectors.pinAjaib4);
+        await pinAjaibVar1.type(process.env.AJ_PIN_1);
+        await pinAjaibVar2.type(process.env.AJ_PIN_2);
+        await pinAjaibVar3.type(process.env.AJ_PIN_3);
+        await pinAjaibVar4.type(process.env.AJ_PIN_4);
+    } catch (error){
+        console.error('An error occurred:', error.message);
+    } finally {
+        console.log('succesfully enter pin');
     }
-
-    // Example gain and loss values (percentage)
-    const gain = 1; // 10% gain
-    const loss = 1;  // 5% loss
-    console.log(`start call setgainloss ${priceInt}`);
-    console.log(`Price: ${priceInt}`);
-    // Calculate adjusted loss and gain
-    const { adjusted_loss, adjusted_gain } = setgainloss(priceInt, loss, gain);
-
+    try {
+        await clickAndWaitForUrl(page,'/home');
+        await delay(1000);
+        while (true) {
+            try {
+              // Wait for the element to be visible
+              const mengertiButton = await page.$(selectors.mengertiButton);
+              if (mengertiButton){
+                await mengertiButton.click();
+                await delay(2000);
+              }
+              else {
+                console.log('Element is no longer visible, stopping clicks.');
+                break
+              }
+        
+            } catch (error) {
+              // If the element is not found or visible anymore, break the loop
+              console.log('Error: Element is no longer visible, stopping clicks.');
+              break;
+            }
+          }
+    } catch (error){
+        console.error('An error occurred:', error.message);
+    } finally {
+        console.log('succesfully click Mengerti Pop Up');
+    }
+    try {
+        await page.waitForSelector(selectors.cariAssetSearchBox, { timeout : 3000 });
+        const StockNameInput = await page.$(selectors.cariAssetSearchBox);
+        await StockNameInput.type(stockName);
+        await delay(2000);
+        await clickByClass(page,'css-2b5fr2');
+    } catch (error){
+        console.error('An error occurred:', error.message);
+    } finally {
+        console.log('succesfully search and open stock name');
+    }
+    try {
+        await clickAndWaitForUrlEvenJustChange(page,'/saham/');
+        await delay(1000);
+        const beliButtonTab = await page.$(selectors.beliButtonTab);
+        await beliButtonTab.click();
+        const DayTradeButton= await page.$(selectors.dayTradingButton);
+        await DayTradeButton.click();
+        const dayTrade100Button= await page.$(selectors.dayTrade100PercentBuyingPower);
+        await dayTrade100Button.click();
+        const BeliButton = await page.$(selectors.BeliButton);
+        await BeliButton.click();
+        await page.waitForSelector(selectors.beliPopUp);
+        const beliPopUpButton = await page.$(selectors.beliPopUp);
+        await beliPopUpButton.click();
+    } catch (error){
+        console.error('An error occurred:', error.message);
+    } finally {
+        console.log('succesfully beli');
+    }
+    try {
+        await delay(10000);
+        const jualButtonTab=await page.$(selectors.jualButtonTab);
+        await jualButtonTab.click();
+        await DayTradeButton.click();
+        await dayTrade100Button.click();
+         // Get the price value from the page (e.g., input field or element containing price)
+        const priceText = await page.$eval(selectors.inputPriceBox, element => element.textContent || element.value);
+        
+        // Parse the price into an integer (e.g., 3780 as number)
+        let priceInt = parseInt(priceText.replace('.', ''), 10);    
+        // Example gain and loss values (percentage)
+        const gain = 1; // 10% gain
+        const loss = 1;  // 5% loss
+        console.log(`start call setgainloss ${priceInt}`);
+        console.log(`Price: ${priceInt}`);
+        // Calculate adjusted loss and gain
+        const { adjusted_loss, adjusted_gain } = setgainloss(priceInt, loss, gain);
     
-    console.log(`Adjusted Loss: ${adjusted_loss}`);
-    console.log(`Adjusted Gain: ${adjusted_gain}`);
-
-    await page.$eval(selectors.inputPriceBox, element => element.value='');
-    const sellPriceInputBox = await page.$(selectors.inputPriceBox);
-    const adjustedGainString= adjusted_gain.toString();
-    await sellPriceInputBox.type(adjustedGainString);
-    const sellButton= await page.$(selectors.jualButton);
-    await sellButton.click(); //jemur
-    await page.waitForSelector(selectors.jualPopUp);
-    const jualPopUpButton = await page.$(selectors.jualPopUp);
-    await jualPopUpButton.click();
-    console.log('finish selling');
+        
+        console.log(`Adjusted Loss: ${adjusted_loss}`);
+        console.log(`Adjusted Gain: ${adjusted_gain}`);
+    
+        await page.$eval(selectors.inputPriceBox, element => element.value='');
+        const sellPriceInputBox = await page.$(selectors.inputPriceBox);
+        const adjustedGainString= adjusted_gain.toString();
+        await sellPriceInputBox.type(adjustedGainString);
+        const sellButton= await page.$(selectors.jualButton);
+        await sellButton.click(); //jemur
+        await page.waitForSelector(selectors.jualPopUp);
+        const jualPopUpButton = await page.$(selectors.jualPopUp);
+        await jualPopUpButton.click();
+    } catch (error){
+        console.error('An error occurred:', error.message);
+    } finally {
+        console.log('succesfully selling');
+    }
     // Close the browser after completion
     await delay(5000)
     await browser.close();
