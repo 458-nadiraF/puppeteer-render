@@ -149,7 +149,10 @@ const buy = async (req,res) => {
         const LoginGmailInput = await page.$(selectors.loginGmailText);
         const loginPasswordInput = await page.$(selectors.loginPasswordText);
         const Loginbutton= await page.$(selectors.loginMasukButton);
-        await LoginGmailInput.type(process.env.AJ_GMAIL);
+        const gmail = process.env.AJ_GMAIL;
+        console.log(gmail);
+        await LoginGmailInput.type(gmail);
+        console.log(process.env.AJ_PASSWORD);
         await loginPasswordInput.type(process.env.AJ_PASSWORD);
         await Loginbutton.click();
         console.log('succesfully loged');
