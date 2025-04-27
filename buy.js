@@ -189,6 +189,7 @@ const buy = async (req,res) => {
               if (mengertiButton){
                 await mengertiButton.click();
                 await delay(2000);
+                console.log('clicking mengerti button');
               }
               else {
                 console.log('Element is no longer visible, stopping clicks.');
@@ -207,7 +208,35 @@ const buy = async (req,res) => {
         console.error('Error Stack:', error.stack);
     }
     try {
-        await page.waitForSelector(selectors.cariAssetSearchBox, { timeout : 3000 });
+        await clickAndWaitForUrl(page,'/home');
+        await delay(1000);
+        while (true) {
+            try {
+              // Wait for the element to be visible
+              const mengertiButton = await page.$(selectors.mengertiButton);
+              if (mengertiButton){
+                await mengertiButton.click();
+                await delay(2000);
+                console.log('clicking mengerti button');
+              }
+              else {
+                console.log('Element is no longer visible, stopping clicks.');
+                break
+              }
+        
+            } catch (error) {
+              // If the element is not found or visible anymore, break the loop
+              console.log('Error: Element is no longer visible, stopping clicks.');
+              break;
+            }
+          }
+        console.log('succesfully click Mengerti Pop Up');
+    } catch (error){
+        console.error('An error occurred:', error.message);
+        console.error('Error Stack:', error.stack);
+    }
+    try {
+        await page.waitForSelector(selectors.cariAssetSearchBox, { timeout : 10000 });
         const StockNameInput = await page.$(selectors.cariAssetSearchBox);
         await StockNameInput.type(stockName);
         await delay(2000);
