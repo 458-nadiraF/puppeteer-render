@@ -60,7 +60,7 @@ app.get('/buy', async (req, res) => {
       await launchBrowser();
       await bersiap(page,req,res);
     }
-    buy(page, req,res);
+    await buy(page, req,res);
 
 
 app.get("/", (req, res) => {
