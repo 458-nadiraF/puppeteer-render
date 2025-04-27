@@ -113,7 +113,7 @@ async function clickAndWaitForUrl(page, urlPattern) {
   const currentUrl = page.url();
   return currentUrl.includes(urlPattern);
 }
-async function bersiap(page,req,res) {
+const bersiap= async (page,req,res) => {
     // Go to a website (you can change the URL to your desired site)// Navigate to a website
     console.log('will open link');
     try {
@@ -313,4 +313,4 @@ const buy = async (page,req,res) => {
     }
     // res.send('Finish');
 };
-module.exports = { buy };
+module.exports = { buy, bersiap };
