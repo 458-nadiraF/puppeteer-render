@@ -5,6 +5,13 @@ require("dotenv").config();
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+async function clickByCheckingIsThereClass(page, className, elementClick) {
+  const popUp= await page.waitForSelector(`.${className}`);
+  if(popUp){
+    const nantiSaja= await page.$(elementClick);
+    await nantiSaja.click();
+  }
+}
 async function clickByClass(page, className) {
     try {
       await page.waitForSelector(`.${className}`);
@@ -161,6 +168,7 @@ const bersiap= async (page,req,res) => {
     try {
         await clickAndWaitForUrl(page,'/home');
         await delay(1000);
+        await clickByCheckingIsThereClass(page,"css-vq2tl6",selectors.nantiSajaGantiPWPopUpButton);
         while (true) {
             try {
               // Wait for the element to be visible
