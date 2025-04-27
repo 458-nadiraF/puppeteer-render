@@ -12,7 +12,7 @@ async function clickByClass(page, className) {
       // console.log(`Clicked element with class: ${className}`);
       return true;
     } catch (error) {
-      console.error(`Error clicking element with class ${className}:`, error);
+      console.error(`Error clicking element with class ${className}:`, error.stack);
       return false;
     }
 }
@@ -158,6 +158,7 @@ const buy = async (req,res) => {
         console.log('succesfully loged');
     } catch (error){
         console.error('An error occurred:', error.message);
+        console.error('Error Stack:', error.stack);
     }
     try {
         await clickAndWaitForUrl(page,'/pin');
@@ -173,6 +174,7 @@ const buy = async (req,res) => {
         console.log('succesfully enter pin');
     } catch (error){
         console.error('An error occurred:', error.message);
+        console.error('Error Stack:', error.stack);
     }
     try {
         await clickAndWaitForUrl(page,'/home');
@@ -199,6 +201,7 @@ const buy = async (req,res) => {
         console.log('succesfully click Mengerti Pop Up');
     } catch (error){
         console.error('An error occurred:', error.message);
+        console.error('Error Stack:', error.stack);
     }
     try {
         await page.waitForSelector(selectors.cariAssetSearchBox, { timeout : 3000 });
@@ -209,6 +212,7 @@ const buy = async (req,res) => {
         console.log('succesfully search and open stock name');
     } catch (error){
         console.error('An error occurred:', error.message);
+        console.error('Error Stack:', error.stack);
     }
     try {
         await clickAndWaitForUrlEvenJustChange(page,'/saham/');
@@ -227,6 +231,7 @@ const buy = async (req,res) => {
         console.log('succesfully beli');
     } catch (error){
         console.error('An error occurred:', error.message);
+        console.error('Error Stack:', error.stack);
     }
     try {
         await delay(10000);
@@ -263,6 +268,7 @@ const buy = async (req,res) => {
         console.log('succesfully selling');
     } catch (error){
         console.error('An error occurred:', error.message);
+        console.error('Error Stack:', error.stack);
     }
     // Close the browser after completion
     await delay(5000)
