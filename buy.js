@@ -6,6 +6,7 @@ function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 async function clickByCheckingIsThereClass(page, className, elementClick) {
+  await delay(5000);
   const popUp= await page.waitForSelector(`.${className}`);
   if(popUp){
     const nantiSaja= await page.$(elementClick);
