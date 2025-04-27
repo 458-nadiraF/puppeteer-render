@@ -61,7 +61,7 @@ app.get('/buy', async (req, res) => {
       await bersiap(page,req,res);
     }
     await buy(page, req,res);
-
+});
 
 app.get("/", (req, res) => {
   res.send("Active");
