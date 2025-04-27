@@ -113,29 +113,8 @@ async function clickAndWaitForUrl(page, urlPattern) {
   const currentUrl = page.url();
   return currentUrl.includes(urlPattern);
 }
-  
-const buy = async (req,res) => {
-    // Set headless mode flag (set to 'false' to show the browser)
-    const headlessMode = false; // Change to 'true' for headless mode
-    const stockName = req.query.stockName;
-    // Launch Chromium (non-headless mode or headless based on the flag)
-    const browser = await puppeteer.launch({
-      headless:true,
-      args: [
-        "--disable-setuid-sandbox",
-        "--no-sandbox",
-        "--no-zygote",
-        "--no-cache",
-      ],
-      executablePath:
-        process.env.NODE_ENV === "production"
-          ? process.env.PUPPETEER_EXECUTABLE_PATH
-          : puppeteer.executablePath(),
-    });
-
-    const page = await browser.newPage();
-
-    // Navigate to a website
+async function bersiap(page,req,res) {
+    // Go to a website (you can change the URL to your desired site)// Navigate to a website
     console.log('will open link');
     try {
         await page.goto('https://login.ajaib.co.id/login',{waitUntil: 'load'}); // Replace with your desired URL
@@ -235,6 +214,15 @@ const buy = async (req,res) => {
         console.error('An error occurred:', error.message);
         console.error('Error Stack:', error.stack);
     }
+    
+    res.send('succesfully siapin page');
+}
+const buy = async (page,req,res) => {
+    // Set headless mode flag (set to 'false' to show the browser)
+     // Change to 'true' for headless mode
+    const stockName = req.query.stockName;
+    // Launch Chromium (non-headless mode or headless based on the flag)
+
     try {
         await page.waitForSelector(selectors.cariAssetSearchBox, { timeout : 10000 });
         const StockNameInput = await page.$(selectors.cariAssetSearchBox);
@@ -248,19 +236,6 @@ const buy = async (req,res) => {
     }
     // const pageHTML = await page.content(); // Get the full HTML of the page
     // console.log('Full HTML of the page:', pageHTML);
-    try{
-    const screenshotBuffer = await page.screenshot();
-
-    // Close the browser
-    // await browser.close();
-
-    // Send the screenshot in the response with the appropriate MIME type
-    res.set('Content-Type', 'image/png');
-    res.send(screenshotBuffer); // Send the screenshot as the response
-    } catch (error){
-        console.error('An error occurred:', error.message);
-        console.error('Error Stack:', error.stack);
-    }
     try {
         await clickAndWaitForUrlEvenJustChange(page,'/saham/');
         await delay(1000);
@@ -322,6 +297,20 @@ const buy = async (req,res) => {
     // Close the browser after completion
     await delay(5000)
     await browser.close();
-    res.send('Finish');
+    
+    try{
+    const screenshotBuffer = await page.screenshot();
+
+    // Close the browser
+    // await browser.close();
+
+    // Send the screenshot in the response with the appropriate MIME type
+    res.set('Content-Type', 'image/png');
+    res.send(screenshotBuffer); // Send the screenshot as the response
+    } catch (error){
+        console.error('An error occurred:', error.message);
+        console.error('Error Stack:', error.stack);
+    }
+    // res.send('Finish');
 };
 module.exports = { buy };
