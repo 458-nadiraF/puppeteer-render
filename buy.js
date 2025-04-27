@@ -139,10 +139,9 @@ const buy = async (req,res) => {
     console.log('will open link');
     try {
         await page.goto('https://login.ajaib.co.id/login',{waitUntil: 'load'}); // Replace with your desired URL
+        console.log('link opened');
     } catch (error){
         console.error('An error occurred:', error.message);
-    } finally {
-        console.log('link opened');
     }
     // Wait for some element (adjust the selector based on the page)
     try{
@@ -153,14 +152,13 @@ const buy = async (req,res) => {
         await LoginGmailInput.type(process.env.AJ_GMAIL);
         await loginPasswordInput.type(process.env.AJ_PASSWORD);
         await Loginbutton.click();
+        console.log('succesfully loged');
     } catch (error){
         console.error('An error occurred:', error.message);
-    } finally {
-        console.log('succesfully loged');
     }
     try {
         await clickAndWaitForUrl(page,'/pin');
-        await page.waitForSelector(selectors.pinAjaib1, { timeout : 3000 });
+        await page.waitForSelector(selectors.pinAjaib1, { timeout : 5000 });
         const pinAjaibVar1 = await page.$(selectors.pinAjaib1);
         const pinAjaibVar2 = await page.$(selectors.pinAjaib2);
         const pinAjaibVar3 = await page.$(selectors.pinAjaib3);
@@ -169,10 +167,9 @@ const buy = async (req,res) => {
         await pinAjaibVar2.type(process.env.AJ_PIN_2);
         await pinAjaibVar3.type(process.env.AJ_PIN_3);
         await pinAjaibVar4.type(process.env.AJ_PIN_4);
+        console.log('succesfully enter pin');
     } catch (error){
         console.error('An error occurred:', error.message);
-    } finally {
-        console.log('succesfully enter pin');
     }
     try {
         await clickAndWaitForUrl(page,'/home');
@@ -196,10 +193,9 @@ const buy = async (req,res) => {
               break;
             }
           }
+        console.log('succesfully click Mengerti Pop Up');
     } catch (error){
         console.error('An error occurred:', error.message);
-    } finally {
-        console.log('succesfully click Mengerti Pop Up');
     }
     try {
         await page.waitForSelector(selectors.cariAssetSearchBox, { timeout : 3000 });
@@ -207,10 +203,9 @@ const buy = async (req,res) => {
         await StockNameInput.type(stockName);
         await delay(2000);
         await clickByClass(page,'css-2b5fr2');
+        console.log('succesfully search and open stock name');
     } catch (error){
         console.error('An error occurred:', error.message);
-    } finally {
-        console.log('succesfully search and open stock name');
     }
     try {
         await clickAndWaitForUrlEvenJustChange(page,'/saham/');
@@ -226,10 +221,9 @@ const buy = async (req,res) => {
         await page.waitForSelector(selectors.beliPopUp);
         const beliPopUpButton = await page.$(selectors.beliPopUp);
         await beliPopUpButton.click();
+        console.log('succesfully beli');
     } catch (error){
         console.error('An error occurred:', error.message);
-    } finally {
-        console.log('succesfully beli');
     }
     try {
         await delay(10000);
@@ -263,10 +257,9 @@ const buy = async (req,res) => {
         await page.waitForSelector(selectors.jualPopUp);
         const jualPopUpButton = await page.$(selectors.jualPopUp);
         await jualPopUpButton.click();
+        console.log('succesfully selling');
     } catch (error){
         console.error('An error occurred:', error.message);
-    } finally {
-        console.log('succesfully selling');
     }
     // Close the browser after completion
     await delay(5000)
