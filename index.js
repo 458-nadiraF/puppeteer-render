@@ -61,6 +61,11 @@ app.get('/buy', async (req, res) => {
       await bersiap(page,req,res);
     }
     await buy(page, req,res);
+    res.send('Bersiap action completed!');
+    
+  } catch (error) {
+    console.error('Error in /bersiap route:', error);
+    res.status(500).send('Error performing Bersiap action');
   }
 });
 
