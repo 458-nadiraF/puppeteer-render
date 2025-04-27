@@ -150,9 +150,7 @@ const buy = async (req,res) => {
         const loginPasswordInput = await page.$(selectors.loginPasswordText);
         const Loginbutton= await page.$(selectors.loginMasukButton);
         const gmail = process.env.AJ_GMAIL;
-        console.log(gmail);
         await LoginGmailInput.type(gmail);
-        console.log(process.env.AJ_PASSWORD);
         await loginPasswordInput.type(process.env.AJ_PASSWORD);
         await Loginbutton.click();
         console.log('succesfully loged');
@@ -162,7 +160,12 @@ const buy = async (req,res) => {
     }
     try {
         await clickAndWaitForUrl(page,'/pin');
-        await page.waitForSelector(selectors.pinAjaib1, { timeout : 5000 });
+        try{
+            await page.waitForSelector(selectors.pinAjaib1, { timeout : 5000, visible : true });
+        }catch(error){
+            console.error('An error occurred:', error.message);
+            await page.waitForSelector(selectors.pinAjaib1, { timeout : 5000 ,  visible : true});
+        }
         const pinAjaibVar1 = await page.$(selectors.pinAjaib1);
         const pinAjaibVar2 = await page.$(selectors.pinAjaib2);
         const pinAjaibVar3 = await page.$(selectors.pinAjaib3);
@@ -237,7 +240,9 @@ const buy = async (req,res) => {
         await delay(10000);
         const jualButtonTab=await page.$(selectors.jualButtonTab);
         await jualButtonTab.click();
+        const DayTradeButton= await page.$(selectors.dayTradingButton);
         await DayTradeButton.click();
+        const dayTrade100Button= await page.$(selectors.dayTrade100PercentBuyingPower);
         await dayTrade100Button.click();
          // Get the price value from the page (e.g., input field or element containing price)
         const priceText = await page.$eval(selectors.inputPriceBox, element => element.textContent || element.value);
