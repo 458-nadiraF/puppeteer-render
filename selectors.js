@@ -19,4 +19,5 @@ module.exports = {
     priceNow:'[data-testid="txt-price"]',
     beliPopUp:'[data-testid="btn-confirmBuy"]',
     jualPopUp:'[data-testid="btn-confirmSell"]',
+    nantiSajaGantiPWPopUpButton:'[plerdy-tracking-id="66345270601"]',
 };
