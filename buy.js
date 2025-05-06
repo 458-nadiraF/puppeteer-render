@@ -43,7 +43,6 @@ function getdivisor(priceini) {
   console.log('selesai get divisor');
   return divisor;
 }
-
 // Define setgainloss function
 function setgainloss(pricei, loss, gain) {
   console.log('set gain loss');
@@ -109,63 +108,84 @@ async function clickAndWaitForUrlEvenJustChange(page, urlPattern) {
   const currentUrl = page.url();
   return currentUrl.includes(urlPattern);
 }
+async function checkURL(page, urlPattern){
+  if (!page) throw new Error('Page object is undefined');
+  const currURL = page.url();
+  return currURL.match(urlPattern);  // Return current URL if already matched
+}
 async function clickAndWaitForUrl(page, urlPattern) {
-  // Set up navigation promise before clicking
-  console.log('wait navigation');
-  const navigationPromise = page.waitForNavigation({ waitUntil: 'load' });
-  
-  // Wait for navigation to complete
-  await navigationPromise;
-  console.log('finish navigation');
-  // Check if we're at the expected URL
   const currentUrl = page.url();
-  return currentUrl.includes(urlPattern);
+  if (currentUrl.match(urlPattern)) {
+      console.log('Already at the expected URL, no need to wait for navigation.');
+      return currentUrl;  // Return current URL if already matched
+  } else {
+    // Set up navigation promise before clicking
+    console.log('wait navigation');
+    const navigationPromise = page.waitForNavigation({ waitUntil: 'load' });
+    
+    // Wait for navigation to complete
+    await navigationPromise;
+    console.log('finish navigation');
+    // Check if we're at the expected URL
+    const currentUrl = page.url();
+    return currentUrl.includes(urlPattern);
+  }
+  }
+async function login(page) {
+  try {
+    await page.goto('https://login.ajaib.co.id/login',{waitUntil: 'load'}); // Replace with your desired URL
+    console.log('link opened');
+  } catch (error){
+      console.error('An error occurred:', error.message);
+  }
+  // Wait for some element (adjust the selector based on the page)
+  try{
+      await page.waitForSelector(selectors.loginGmailText);
+      const LoginGmailInput = await page.$(selectors.loginGmailText);
+      const loginPasswordInput = await page.$(selectors.loginPasswordText);
+      const Loginbutton= await page.$(selectors.loginMasukButton);
+      const gmail = process.env.AJ_GMAIL;
+      await LoginGmailInput.type(gmail);
+      await loginPasswordInput.type(process.env.AJ_PASSWORD);
+      await Loginbutton.click();
+      console.log('succesfully loged');
+  } catch (error){
+      console.error('An error occurred:', error.message);
+      console.error('Error Stack:', error.stack);
+  }
+}
+async function enterPIN(page) {
+  try {
+    await clickAndWaitForUrl(page,'/pin');
+    await delay(2000);
+    const pinAjaibVar1 = await page.$('.pincode-input-container input:nth-of-type(1)');
+
+    // Select the second input element
+    const pinAjaibVar2 = await page.$('.pincode-input-container input:nth-of-type(2)');
+
+    // Select the third input element
+    const pinAjaibVar3 = await page.$('.pincode-input-container input:nth-of-type(3)');
+
+    // Select the fourth input element
+    const pinAjaibVar4 = await page.$('.pincode-input-container input:nth-of-type(4)');
+    await pinAjaibVar1.type(process.env.AJ_PIN_1);
+    await delay(500);
+    await pinAjaibVar2.type(process.env.AJ_PIN_2);
+    await delay(500);
+    await pinAjaibVar3.type(process.env.AJ_PIN_3);
+    await delay(750);
+    await pinAjaibVar4.type(process.env.AJ_PIN_4);
+    console.log('succesfully enter pin');
+  } catch (error){
+      console.error('An error occurred:', error.message);
+      console.error('Error Stack:', error.stack);
+  }
 }
 const bersiap= async (page,req,res) => {
     // Go to a website (you can change the URL to your desired site)// Navigate to a website
     console.log('will open link');
-    try {
-        await page.goto('https://login.ajaib.co.id/login',{waitUntil: 'load'}); // Replace with your desired URL
-        console.log('link opened');
-    } catch (error){
-        console.error('An error occurred:', error.message);
-    }
-    // Wait for some element (adjust the selector based on the page)
-    try{
-        await page.waitForSelector(selectors.loginGmailText);
-        const LoginGmailInput = await page.$(selectors.loginGmailText);
-        const loginPasswordInput = await page.$(selectors.loginPasswordText);
-        const Loginbutton= await page.$(selectors.loginMasukButton);
-        const gmail = process.env.AJ_GMAIL;
-        await LoginGmailInput.type(gmail);
-        await loginPasswordInput.type(process.env.AJ_PASSWORD);
-        await Loginbutton.click();
-        console.log('succesfully loged');
-    } catch (error){
-        console.error('An error occurred:', error.message);
-        console.error('Error Stack:', error.stack);
-    }
-    try {
-        await clickAndWaitForUrl(page,'/pin');
-        try{
-            await page.waitForSelector(selectors.pinAjaib1, { timeout : 5000, visible : true });
-        }catch(error){
-            console.error('An error occurred:', error.message);
-            await page.waitForSelector(selectors.pinAjaib1, { timeout : 5000 ,  visible : true});
-        }
-        const pinAjaibVar1 = await page.$(selectors.pinAjaib1);
-        const pinAjaibVar2 = await page.$(selectors.pinAjaib2);
-        const pinAjaibVar3 = await page.$(selectors.pinAjaib3);
-        const pinAjaibVar4 = await page.$(selectors.pinAjaib4);
-        await pinAjaibVar1.type(process.env.AJ_PIN_1);
-        await pinAjaibVar2.type(process.env.AJ_PIN_2);
-        await pinAjaibVar3.type(process.env.AJ_PIN_3);
-        await pinAjaibVar4.type(process.env.AJ_PIN_4);
-        console.log('succesfully enter pin');
-    } catch (error){
-        console.error('An error occurred:', error.message);
-        console.error('Error Stack:', error.stack);
-    }
+    await login(page);
+    await enterPIN(page);
     try {
         await clickAndWaitForUrl(page,'/home');
         await delay(1000);
@@ -223,8 +243,42 @@ const bersiap= async (page,req,res) => {
         console.error('An error occurred:', error.message);
         console.error('Error Stack:', error.stack);
     }
-    
+        // After login and PIN entry, continuously check for logout
+    const checkLogout = async (page) => {
+      try {
+          // Check for a specific element or condition that indicates the user is logged out
+          // Example: Check if a login form or a specific logout indicator is visible
+          let loginForm= await checkURL(page,'/login'); // Replace with your login form selector
+          let pinForm1 = await checkURL(page,'/pin');
+
+          if (loginForm) {
+              // User has been logged out, handle the logout actions here
+              console.log('User get logged out');
+              await login(page);
+          } else if (pinForm1) {
+              console.log('Handle PIN');
+              await enterPIN(page);
+          } else {
+              console.log('check');
+          }
+          } catch (error) {
+              console.error('Error checking logout status:', error);
+          }
+    };
+  
+      // Set up a loop or interval to check for logout periodically (e.g., every 5 seconds)
+    const checkLoop = async () => {
+        await checkLogout(page);
+        setTimeout(checkLoop, 30000);
+    };
+    checkLoop();
+  
     res.send('succesfully siapin page');
+    
+}
+const solvingpin = async (page,req,res) => {
+    await enterPIN(page);
+    res.send('selesai enter pin');
 }
 const buy = async (page,req,res) => {
     // Set headless mode flag (set to 'false' to show the browser)
@@ -254,6 +308,20 @@ const buy = async (page,req,res) => {
         await DayTradeButton.click();
         const dayTrade100Button= await page.$(selectors.dayTrade100PercentBuyingPower);
         await dayTrade100Button.click();
+        const priceText1 = await page.$eval(selectors.inputPriceBox, element => element.textContent || element.value);
+        
+        // Parse the price into an integer (e.g., 3780 as number)
+        let priceInt = parseInt(priceText1.replace('.', ''), 10);    
+        // Example gain and loss values (percentage)
+        console.log(`start call setgainloss ${priceInt}`);
+        console.log(`Price: ${priceInt}`);
+        // Calculate adjusted loss and gain
+        const { adjusted_loss, adjusted_gain } = setgainloss(priceInt, 1,1);
+        console.log(`Adjusted price: ${adjusted_gain}`);
+        await page.$eval(selectors.inputPriceBox, element => element.value='');
+        const buyPriceInputBox = await page.$(selectors.inputPriceBox);
+        const adjustedGain1String= adjusted_gain.toString();
+        await buyPriceInputBox.type(adjustedGain1String);
         const BeliButton = await page.$(selectors.BeliButton);
         await BeliButton.click();
         await page.waitForSelector(selectors.beliPopUp);
@@ -265,7 +333,7 @@ const buy = async (page,req,res) => {
         console.error('Error Stack:', error.stack);
     }
     try {
-        await delay(10000);
+        await delay(30000);
         const jualButtonTab=await page.$(selectors.jualButtonTab);
         await jualButtonTab.click();
         const DayTradeButton= await page.$(selectors.dayTradingButton);
@@ -278,10 +346,11 @@ const buy = async (page,req,res) => {
         // Parse the price into an integer (e.g., 3780 as number)
         let priceInt = parseInt(priceText.replace('.', ''), 10);    
         // Example gain and loss values (percentage)
-        const gain = 1; // 10% gain
-        const loss = 1;  // 5% loss
+
         console.log(`start call setgainloss ${priceInt}`);
         console.log(`Price: ${priceInt}`);
+        const gain = 1; // 10% gain
+        const loss = 1;  // 5% loss
         // Calculate adjusted loss and gain
         const { adjusted_loss, adjusted_gain } = setgainloss(priceInt, loss, gain);
     
@@ -322,4 +391,4 @@ const buy = async (page,req,res) => {
     }
     // res.send('Finish');
 };
-module.exports = { buy, bersiap };
+module.exports = { buy, bersiap , solvingpin };
