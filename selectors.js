@@ -20,4 +20,9 @@ module.exports = {
     beliPopUp:'[data-testid="btn-confirmBuy"]',
     jualPopUp:'[data-testid="btn-confirmSell"]',
     nantiSajaGantiPWPopUpButton:'[plerdy-tracking-id="66345270601"]',
+    pinAjaib1_2:'[plerdy-tracking-id="29905954202"]',
+    pinAjaib2_2:'[plerdy-tracking-id="37935991804"]',
+    pinAjaib3_2:'[plerdy-tracking-id="37935991805"]',
+    pinAjaib4_2:'[plerdy-tracking-id="37935991806"]',
+
 };
