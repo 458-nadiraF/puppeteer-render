@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const selectors = require('./selectors');
 require("dotenv").config();
+
 // require("dotenv").config();
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -267,9 +268,10 @@ const bersiap= async (page,req,res) => {
     };
   
       // Set up a loop or interval to check for logout periodically (e.g., every 5 seconds)
+    let timeID;
     const checkLoop = async () => {
         await checkLogout(page);
-        setTimeout(checkLoop, 30000);
+        timeID=setTimeout(checkLoop, 30000);
     };
     checkLoop();
   
@@ -279,6 +281,13 @@ const bersiap= async (page,req,res) => {
 const solvingpin = async (page,req,res) => {
     await enterPIN(page);
     res.send('selesai enter pin');
+}
+const ended = async (page,req,res) => {
+    const stopCheckLoop = async () => {     // stop future loops
+      if (timeID) clearTimeout(timeID);  // clear pending timeout
+    }
+    stopCheckLoop();
+    res.send('ended');
 }
 const buy = async (page,req,res) => {
     // Set headless mode flag (set to 'false' to show the browser)
