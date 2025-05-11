@@ -63,8 +63,23 @@ app.get('/solvepin', async (req, res) => {
     // res.send('Bersiap action completed!');
     
   } catch (error) {
-    console.error('Error in /bersiap route:', error);
-    res.status(500).send('Error performing Bersiap action');
+    console.error('Error in /solvepin route:', error);
+    res.status(500).send('Error performing solve pin action');
+  }
+});
+app.get('/ended', async (req, res) => {
+  try {
+    if (!browser || !page) {
+      // If no browser is launched, start it
+      // await launchBrowser();
+    }
+    await ended(page,req,res);
+    // Respond back to the client with a success message
+    // res.send('Bersiap action completed!');
+    
+  } catch (error) {
+    console.error('Error in /ended route:', error);
+    res.status(500).send('Error performing Ended action');
   }
 });
 //route to check bid-ask price
@@ -114,8 +129,8 @@ app.get('/buy', async (req, res) => {
     res.send('Bersiap action completed!');
     
   } catch (error) {
-    console.error('Error in /bersiap route:', error);
-    res.status(500).send('Error performing Bersiap action');
+    console.error('Error in /checkbidask route:', error);
+    res.status(500).send('Error performing checkbidask action');
   }
 });
 
