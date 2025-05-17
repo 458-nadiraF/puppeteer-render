@@ -12,10 +12,18 @@ const headlessMode = false;
 
 // Function to launch a new browser and keep it alive for 5 minutes
 const launchBrowser = async () => {
-  browser = await puppeteer.launch({
-    headless: headlessMode, // 'false' to show the browser, 'true' for headless mode
-    defaultViewport: null,  // Optional: Allows full screen for visible browser
-    args: ['--start-maximized'] // Optional: Starts browser in maximized mode (only if non-headless)
+    browser = await puppeteer.launch({
+        headless:true,
+        args: [
+          "--disable-setuid-sandbox",
+          "--no-sandbox",
+          "--no-zygote",
+          "--no-cache",
+        ],
+        executablePath:
+          process.env.NODE_ENV === "production"
+            ? process.env.PUPPETEER_EXECUTABLE_PATH
+            : puppeteer.executablePath(),
   });
   page = await browser.newPage();
 
