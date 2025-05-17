@@ -1,3 +1,5 @@
+const { HTTPRequest } = require("puppeteer");
+
 module.exports = {
     loginGmailText:'[plerdy-tracking-id="25891014701"]',
     loginPasswordText:'[plerdy-tracking-id="34199228101"]',
@@ -11,12 +13,14 @@ module.exports = {
     cariAssetSearchBox:'[plerdy-tracking-id="70613876501"]',
     dayTradingButton:'[plerdy-tracking-id="86913280101"]',
     inputPriceBox:'[plerdy-tracking-id="48630356201"]', //get value
+    dayTrade25PercentBuyingPower:'[plerdy-tracking-id="52787895901"]',
     dayTrade100PercentBuyingPower:'[plerdy-tracking-id="53637093701"]',
     BeliButton:'[data-testid="btn-submitBuy"]',
     jualButton:'[data-testid="btn-submitSell"]',
     beliButtonTab:'[plerdy-tracking-id="80673511701"]',
     jualButtonTab:'[plerdy-tracking-id="80643055701"]',
     priceNow:'[data-testid="txt-price"]',
+    currentStockName:'[data-testid="txt-stockCode"]',
     beliPopUp:'[data-testid="btn-confirmBuy"]',
     jualPopUp:'[data-testid="btn-confirmSell"]',
     nantiSajaGantiPWPopUpButton:'[plerdy-tracking-id="66345270601"]',
@@ -24,5 +28,6 @@ module.exports = {
     pinAjaib2_2:'[plerdy-tracking-id="37935991804"]',
     pinAjaib3_2:'[plerdy-tracking-id="37935991805"]',
     pinAjaib4_2:'[plerdy-tracking-id="37935991806"]',
-
+    riwayatDayTrade:'[plerdy-tracking-id="18428485001"]',
+    riwayatTransactionButton: '[plerdy-tracking-id="28577355401"]',
 };
