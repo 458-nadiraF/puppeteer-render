@@ -48,7 +48,13 @@ function getdivisor(priceini) {
 function setgainloss(pricei, loss, gain) {
   console.log('set gain loss with price: ',pricei);
   const divisor = getdivisor(pricei);
-  const pricep = pricei * 1000;
+  let pricep;
+  if (pricei % 1 !== 0) {
+    // If it has a decimal, remove the decimal by multiplying by 1000
+    pricep = Math.round(pricei * 1000);
+  }else{
+    pricep = pricei;
+  }
   console.log('price in function setgainloss ', pricep)
 
   // Adjusting loss and gain based on the divisor
@@ -220,6 +226,7 @@ async function login(page) {
   }
 }
 async function sell(page, stockName){
+  try{
   const jualButtonTab=await page.$(selectors.jualButtonTab);
   await jualButtonTab.click();
   const DayTradeButton= await page.$(selectors.dayTradingButton);
@@ -254,6 +261,9 @@ async function sell(page, stockName){
   const jualPopUpButton = await page.$(selectors.jualPopUp);
   await jualPopUpButton.click();
   console.log('succesfully selling');
+  }catch(error){
+    console.error('Error:', error);
+  }
 }
 async function isValidAjaibHomeURL(page, stockName) {
   const url = await page.url(); // Get the current URL from Puppeteer page
@@ -513,7 +523,7 @@ const buy = async (page,browser, req,res) => {
         // console.log(`Price: ${price.toString()}`);
         // console.log(`Aksi: ${aksi.toString()}`);
         // console.log(`Status: ${status.toString()}`);
-        if(aksi == 'Beli' && isSold){
+        if(aksi == 'Beli' && isSold){ //aksi == 'Beli' && 
             boughtPrice = price;
         }
         const { adjusted_loss, adjusted_gain } = setgainloss(boughtPrice, 1,1);
@@ -525,13 +535,15 @@ const buy = async (page,browser, req,res) => {
           if (timeToSell_Profit || timeToSell_Loss) {
             console.log('Stock Name before calling sell:', stockName);
             await sell(page, stockName);   
-            await delay(10000); 
+            await delay(2000); 
             const { isSold, price, aksi, stockName2, status } = await checkingRiwayat(page);
             if(aksi =='Jual' && isSold){
               await delay(2000);
               console.log('sudah terjual');
               isBuying = false;
               console.log('isBuying after sell',isBuying);
+              clearInterval(checkStopLossTrailStopInterval);
+
             }
           }
         };
