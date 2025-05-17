@@ -134,7 +134,8 @@ app.get('/cekRiwayat', async (req, res) => {
   }
 });
 app.get("/", (req, res) => {
-  res.status(200).send("Active");
+    console.log('Active');
+    res.status(200).send("Active");
 });
 
 app.listen(PORT, () => {
