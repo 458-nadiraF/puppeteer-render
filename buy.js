@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const selectors = require('./selectors');
 let isBuying = false;
-// require("dotenv").config();
+require("dotenv").config();
 // require("dotenv").config();
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
