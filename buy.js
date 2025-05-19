@@ -49,7 +49,7 @@ function setgainloss(pricei, loss, gain) {
   console.log('set gain loss with price: ',pricei);
   const divisor = getdivisor(pricei);
   let pricep;
-  if (pricei % 1 !== 0) {
+  if (pricei < 40) {
     // If it has a decimal, remove the decimal by multiplying by 1000
     pricep = Math.round(pricei * 1000);
   }else{
@@ -262,7 +262,6 @@ async function sell(page, stockName){
   await jualPopUpButton.click();
   console.log('succesfully selling');
   }catch(error){
-    console.error('Error:', error);
   }
 }
 async function isValidAjaibHomeURL(page, stockName) {
@@ -547,7 +546,7 @@ const buy = async (page,browser, req,res) => {
             }
           }
         };
-        const checkStopLossTrailStopInterval = setInterval(() => checkStopLossTrailProfit(stockName), 8000);
+        const checkStopLossTrailStopInterval = setInterval(() => checkStopLossTrailProfit(stockName), 15000);
         // const checkStopLossInterval = setInterval(() => checkStopLoss(stockName), 5000);
         // const checkTrailProfitInterval = setInterval(() => checkTrailProfit(stockName), 12000);
         // const checkLoop = async () => {
