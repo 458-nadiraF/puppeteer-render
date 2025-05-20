@@ -19,7 +19,6 @@ const launchBrowser = async () => {
           "--no-sandbox",
           "--no-zygote",
           "--no-cache",
-          "--disable-gpu',
           "--single-process",
           "--disable-dev-shm-usage",
             
