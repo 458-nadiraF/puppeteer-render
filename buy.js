@@ -163,7 +163,7 @@ async function checkingRiwayat(page){
 async function clickAndWaitForUrlEvenJustChange(page, urlPattern) {
   // Set up navigation promise before clicking
   // This will wait for navigation, but we can set a timeout if it's taking too long
-  const navigationPromise = page.waitForNavigation({ waitUntil: 'load', timeout: 30000 })
+  const navigationPromise = page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 })
   .catch(() => console.log("Navigation didn't happen in time"));
 
   // Alternatively, you could wait for the URL change using the 'waitForFunction' to check for a URL match in SPAs
@@ -192,7 +192,7 @@ async function clickAndWaitForUrl(page, urlPattern) {
   } else {
     // Set up navigation promise before clicking
     console.log('wait navigation');
-    const navigationPromise = page.waitForNavigation({ waitUntil: 'load' });
+    const navigationPromise = page.waitForNavigation({ waitUntil: 'domcontentloaded' });
     
     // Wait for navigation to complete
     await navigationPromise;
@@ -204,7 +204,7 @@ async function clickAndWaitForUrl(page, urlPattern) {
   }
 async function login(page) {
   try {
-    await page.goto('https://login.ajaib.co.id/login',{waitUntil: 'load'}); // Replace with your desired URL
+    await page.goto('https://login.ajaib.co.id/login',{waitUntil: 'domcontentloaded'}); // Replace with your desired URL
     console.log('link opened');
   } catch (error){
       console.error('An error occurred:', error.message);
