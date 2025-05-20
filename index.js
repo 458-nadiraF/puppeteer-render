@@ -19,6 +19,10 @@ const launchBrowser = async () => {
           "--no-sandbox",
           "--no-zygote",
           "--no-cache",
+          "--disable-gpu',
+          "--single-process",
+          "--disable-dev-shm-usage",
+            
         ],
         executablePath:
           process.env.NODE_ENV === "production"
@@ -26,6 +30,11 @@ const launchBrowser = async () => {
             : puppeteer.executablePath(),
   });
   page = await browser.newPage();
+  page.setViewport({
+      width: 1366,
+      height:768,
+      deviceScaleFactor:1,
+  });
 
   // Set a timeout to close the browser after 5 minutes (300000ms)
   // browserTimeout = setTimeout(async () => {
@@ -35,7 +44,21 @@ const launchBrowser = async () => {
   //   page = null;
   // }, 300000); // 5 minutes
 };
+app.get('/screenshot', async (req, res) => {
+  try{
+    const screenshotBuffer = await page.screenshot();
 
+    // Close the browser
+    // await browser.close();
+
+    // Send the screenshot in the response with the appropriate MIME type
+    res.set('Content-Type', 'image/png');
+    res.send(screenshotBuffer); // Send the screenshot as the response
+    } catch (error){
+        console.error('An error occurred:', error.message);
+        console.error('Error Stack:', error.stack);
+    }
+});
 // Route for /bersiap
 app.get('/bersiap', async (req, res) => {
   try {
