@@ -3,7 +3,7 @@ const puppeteer= require("puppeteer");
 const { buy, bersiap, solvingpin , cekRiwayat } = require("./buy");
 const app = express();
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8080;
 
 let browser = null;
 let page = null;
