@@ -1,6 +1,6 @@
 const express = require("express");
 const puppeteer= require("puppeteer");
-const { buy, bersiap, solvingpin , cekRiwayat } = require("./buy");
+const { buy, bersiap, solvingpin , cekRiwayat , stopLoop } = require("./buy");
 const app = express();
 
 const PORT = process.env.PORT || 8080;
@@ -43,6 +43,13 @@ const launchBrowser = async () => {
   //   page = null;
   // }, 300000); // 5 minutes
 };
+app.get('/stop',async(req,res) =>{
+  try{
+    await stopLoop(res);
+  }catch(error){
+    console.error(error.message);
+  }
+})
 app.get('/screenshot', async (req, res) => {
   try{
     const screenshotBuffer = await page.screenshot();
