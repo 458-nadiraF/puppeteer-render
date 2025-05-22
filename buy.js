@@ -1,6 +1,8 @@
 const puppeteer = require('puppeteer');
 const selectors = require('./selectors');
 let isBuying = false;
+let checkStopLossTrailStopInterval;
+let checkLoop;
 require("dotenv").config();
 // require("dotenv").config();
 function delay(ms) {
@@ -376,7 +378,7 @@ const bersiap= async (page,req,res) => {
     };
   
       // Set up a loop or interval to check for logout periodically (e.g., every 5 seconds)
-    const checkLoop = async () => {
+    checkLoop = async () => {
         await checkLogout(page);
         setTimeout(checkLoop, 30000);
     };
@@ -449,7 +451,16 @@ const solvingpin = async (page,req,res) => {
     await enterPIN(page);
     res.send('selesai enter pin');
 }
+const stopLoop = async (res) => {
+  try{
+    clearTimeout(checkLoop);
+    clearInterval(checkStopLossTrailStopInterval);
+    res.send('selesai stop');
+  } catch(error){
+    console.error(error.message);
+  }
 
+}
 const buy = async (page,browser, req,res) => {
     // Set headless mode flag (set to 'false' to show the browser)
      // Change to 'true' for headless mode
@@ -546,7 +557,7 @@ const buy = async (page,browser, req,res) => {
             }
           }
         };
-        const checkStopLossTrailStopInterval = setInterval(() => checkStopLossTrailProfit(stockName), 15000);
+        checkStopLossTrailStopInterval = setInterval(() => checkStopLossTrailProfit(stockName), 15000);
         // const checkStopLossInterval = setInterval(() => checkStopLoss(stockName), 5000);
         // const checkTrailProfitInterval = setInterval(() => checkTrailProfit(stockName), 12000);
         // const checkLoop = async () => {
@@ -631,4 +642,4 @@ async function checkStopLossTrailStopFunc(page,adjusted_loss_input,adjusted_gain
     return {timeToSell_Profit: false , timeToSell_Loss: false};
 }
 
-module.exports = { buy, bersiap , solvingpin , cekRiwayat };
+module.exports = { buy, bersiap , solvingpin , cekRiwayat , stopLoop };
