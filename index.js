@@ -46,6 +46,7 @@ const launchBrowser = async () => {
 app.get('/stop',async(req,res) =>{
   try{
     await stopLoop(res);
+    server.close();
   }catch(error){
     console.error(error.message);
   }
@@ -167,6 +168,6 @@ app.get("/", (req, res) => {
     res.status(200).send("Active");
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
