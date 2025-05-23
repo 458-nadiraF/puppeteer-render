@@ -7,6 +7,9 @@ WORKDIR /usr/src/app
 # Create a directory for node_modules with appropriate permissions
 
 COPY package*.json ./
+
+RUN chown -R node:node /usr/src/app
+USER node
 RUN npm install
 RUN mkdir -p /usr/src/app/node_modules && chmod -R 777 /usr/src/app
 RUN npm ci --unsafe-perm=true
