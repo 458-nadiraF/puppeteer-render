@@ -453,8 +453,12 @@ const solvingpin = async (page,req,res) => {
 }
 const stopLoop = async (res) => {
   try{
-    clearTimeout(checkLoop);
-    clearInterval(checkStopLossTrailStopInterval);
+    setTimeout(() => {
+        clearTimeout(checkLoop);
+        clearInterval(checkStopLossTrailStopInterval); 
+        console.log("Interval cleared after 5 seconds");
+        }, 5000);
+    
     res.send('selesai stop');
   } catch(error){
     console.error(error.message);
