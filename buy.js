@@ -378,11 +378,11 @@ const bersiap= async (page,req,res) => {
     };
   
       // Set up a loop or interval to check for logout periodically (e.g., every 5 seconds)
-    checkLoop = async () => {
+    const checkLoopa = async () => {
         await checkLogout(page);
-        setTimeout(checkLoop, 30000);
+        checkLoop=setTimeout(checkLoopa, 30000);
     };
-    checkLoop();
+    checkLoopa();
     try {
         await clickAndWaitForUrl(page,'/home');
         await delay(5000);
