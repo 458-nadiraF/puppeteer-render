@@ -28,7 +28,7 @@ const launchBrowser = async () => {
         ],
         executablePath:
           process.env.NODE_ENV === "production"
-            ? await chromium.executablePath,
+            ? await chromium.executablePath
             : puppeteer.executablePath(),
           // executablePath:
           // process.env.NODE_ENV === "production"
