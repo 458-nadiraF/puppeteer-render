@@ -1,7 +1,6 @@
 const express = require("express");
 const puppeteer= require("puppeteer");
 
-const chromium = require('chrome-aws-lambda');
 const { buy, bersiap, solvingpin , cekRiwayat , stopLoop } = require("./buy");
 
 const app = express();
@@ -15,7 +14,7 @@ const headlessMode = false;
 
 // Function to launch a new browser and keep it alive for 5 minutes
 const launchBrowser = async () => {
-    browser = await chromium.puppeteer.launch({
+    browser = await puppeteer.launch({
         headless:true,
         args: [
           "--disable-setuid-sandbox",
@@ -26,14 +25,13 @@ const launchBrowser = async () => {
           "--disable-dev-shm-usage",
             
         ],
-        executablePath:await chromium.executablePath
           // process.env.NODE_ENV === "production"
           //   ? 
           //   : puppeteer.executablePath(),
-          // executablePath:
-          // process.env.NODE_ENV === "production"
-          //   ? process.env.PUPPETEER_EXECUTABLE_PATH
-          //   : puppeteer.executablePath(),
+          executablePath:
+          process.env.NODE_ENV === "production"
+            ? process.env.PUPPETEER_EXECUTABLE_PATH
+            : puppeteer.executablePath(),
   });
   page = await browser.newPage();
   page.setViewport({
