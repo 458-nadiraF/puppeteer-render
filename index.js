@@ -26,10 +26,10 @@ const launchBrowser = async () => {
           "--disable-dev-shm-usage",
             
         ],
-        executablePath:
-          process.env.NODE_ENV === "production"
-            ? await chromium.executablePath
-            : puppeteer.executablePath(),
+        executablePath:await chromium.executablePath
+          // process.env.NODE_ENV === "production"
+          //   ? 
+          //   : puppeteer.executablePath(),
           // executablePath:
           // process.env.NODE_ENV === "production"
           //   ? process.env.PUPPETEER_EXECUTABLE_PATH
