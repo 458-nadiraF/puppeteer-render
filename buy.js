@@ -455,10 +455,12 @@ const stopLoop = async (res) => {
   try{
     setTimeout(() => {
         clearTimeout(checkLoop);
-        clearInterval(checkStopLossTrailStopInterval); 
-        console.log("Interval cleared after 5 seconds");
+        console.log("Timeout Login Loop cleared after 5 seconds");
         }, 5000);
-    
+    setTimeout(() => {
+        clearInterval(checkStopLossTrailStopInterval); 
+        console.log("Interval SL/TP cleared after 5 seconds");
+        }, 5000);
     res.send('selesai stop');
   } catch(error){
     console.error(error.message);
