@@ -168,15 +168,6 @@ async function checkingRiwayat(page){
 
   return { isSold, price: data.price, aksi: data.aksi, stockName2: data.stockName2, status: data.status };
 }
-
-  // Check if the transaction is today
-
-  // Check if the stock has already been sold
-  const isSold = data.status.toLowerCase() === 'done';  // Assuming "Done" means the stock is sold
-  console.log(`isSold: ${isSold}, price: ${data.price}, aksi: ${data.aksi}, stockName2: ${data.stockName2}, status: ${data.status}`);
-
-  return { isSold, price: data.price, aksi: data.aksi, stockName2: data.stockName2, status: data.status };
-}
 // Click element and wait for navigation to complete
 async function clickAndWaitForUrlEvenJustChange(page, urlPattern) {
   // Set up navigation promise before clicking
