@@ -453,14 +453,20 @@ const solvingpin = async (page,req,res) => {
 }
 const stopLoop = async (res) => {
   try{
-    setTimeout(() => {
-        clearTimeout(checkLoop);
-        console.log("Timeout Login Loop cleared after 5 seconds");
-        }, 5000);
-    setTimeout(() => {
+      clearTimeout(checkLoop);
+      try{
         clearInterval(checkStopLossTrailStopInterval); 
-        console.log("Interval SL/TP cleared after 5 seconds");
-        }, 5000);
+      } catch(error){
+        console.error(error.message);
+      }
+    // setTimeout(() => {
+    //     clearTimeout(checkLoop);
+    //     console.log("Timeout Login Loop cleared after 5 seconds");
+    //     }, 5000);
+    // setTimeout(() => {
+    //     clearInterval(checkStopLossTrailStopInterval); 
+    //     console.log("Interval SL/TP cleared after 5 seconds");
+    //     }, 5000);
     res.send('selesai stop');
   } catch(error){
     console.error(error.message);
