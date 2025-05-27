@@ -540,6 +540,7 @@ const buy = async (page,browser, req,res) => {
         if(aksi == 'Beli' && isSold){ //aksi == 'Beli' && 
             boughtPrice = price;
         }
+        console.log('boughtPrice',boughtPrice);
         const { adjusted_loss, adjusted_gain } = setgainloss(boughtPrice, 1,1);
         console.log('Stock Name before calling checkstoploss:', stockName);
         const checkStopLossTrailProfit = async (stockName) => {
@@ -600,6 +601,7 @@ async function checkStopLossTrailStopFunc(page,adjusted_loss_input,adjusted_gain
     console.error('❌ Failed to get bid price');
     return {timeToSell_Profit: false , timeToSell_Loss: false};
   }
+  console.log('bid',result.bidPrice);
   const currentBidPrice = parseInt(result.bidPrice.replace(/\./g, ''), 10);
     // Check if price is higher than initial adjusted gain
     if (currentBidPrice >= adjusted_gain_input) {
