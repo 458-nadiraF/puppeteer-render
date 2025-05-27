@@ -110,7 +110,9 @@ const cekRiwayat = async (page,browser, req,res) => {
 }
 async function checkingRiwayat(page){
     //cek halaman
+    while(true){
     const urlNow = await clickAndWaitForUrl(page, '/home');
+    await delay(2000);
     //open riwayat
     const riwayatButton = await page.$(selectors.riwayatTransactionButton);
     await riwayatButton.click();
@@ -123,6 +125,7 @@ async function checkingRiwayat(page){
         
       // Ensure the table exists
       if (!table) {
+          console.log('no table found');
           return null;  // No table found
       }
 
@@ -130,6 +133,7 @@ async function checkingRiwayat(page){
       const firstRow = table.querySelector('tbody tr');
 
       if (!firstRow) {
+          console.log('no first row found');
           return null;  // No rows found
       }
 
@@ -149,9 +153,21 @@ async function checkingRiwayat(page){
      // Return all the extracted data
      return { aksi, price, stockName2, status };
    });
-   if (!data) {
-    return { isSold: false, price: '',aksi: '', stockName2: '', status: 'No data found' };
+   if (data && data.price) {
+      break;
+   }
+   console.log("Price is null, retrying...");
+   await delay(2000);
   }
+
+  // Check if the transaction is today
+
+  // Check if the stock has already been sold
+  const isSold = data.status.toLowerCase() === 'done';  // Assuming "Done" means the stock is sold
+  console.log(`isSold: ${isSold}, price: ${data.price}, aksi: ${data.aksi}, stockName2: ${data.stockName2}, status: ${data.status}`);
+
+  return { isSold, price: data.price, aksi: data.aksi, stockName2: data.stockName2, status: data.status };
+}
 
   // Check if the transaction is today
 
