@@ -51,7 +51,12 @@ const launchBrowser = async () => {
 app.get('/stop',async(req,res) =>{
   try{
     await stopLoop(res);
+  }catch(error){
+    console.error(error.message);
+  } try{
+    console.log('try closing server');
     server.close();
+    console.log('server closed');
   }catch(error){
     console.error(error.message);
   }
