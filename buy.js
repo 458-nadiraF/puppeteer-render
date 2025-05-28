@@ -108,66 +108,82 @@ const cekRiwayat = async (page,browser, req,res) => {
   status: status || 'Not found'
   });
 }
-async function checkingRiwayat(page){
-    //cek halaman
-    while(true){
-    const urlNow = await clickAndWaitForUrl(page, '/home');
-    await delay(2000);
-    //open riwayat
-    const riwayatButton = await page.$(selectors.riwayatTransactionButton);
-    await riwayatButton.click();
-    const dayTradeRiwayatButton = await page.$(selectors.riwayatDayTrade);
-    await dayTradeRiwayatButton.click();   
-    await delay(2000);
-    // Scrape the data from the first row of the table
-    const data = await page.evaluate(() => {
-      const table = document.querySelector('.css-ryf5o1');
+async function checkingRiwayat(page) {
+    // Initialize data as null to avoid undefined reference errors
+    let data = null;
+
+    // cek halaman
+    while (true) {
+        const urlNow = await clickAndWaitForUrl(page, '/home');
+        await delay(2000);
         
-      // Ensure the table exists
-      if (!table) {
-          console.log('no table found');
-          return null;  // No table found
-      }
+        // Open riwayat
+        const riwayatButton = await page.$(selectors.riwayatTransactionButton);
+        await riwayatButton.click();
+        const dayTradeRiwayatButton = await page.$(selectors.riwayatDayTrade);
+        await dayTradeRiwayatButton.click();   
+        await delay(2000);
+        
+        // Scrape the data from the first row of the table
+        data = await page.evaluate(() => {
+            const table = document.querySelector('.css-ryf5o1');
+            
+            // Ensure the table exists
+            if (!table) {
+                console.log('no table found');
+                return null;  // No table found
+            }
 
-      // Get the first row of the table
-      const firstRow = table.querySelector('tbody tr');
+            // Get the first row of the table
+            const firstRow = table.querySelector('tbody tr');
 
-      if (!firstRow) {
-          console.log('no first row found');
-          return null;  // No rows found
-      }
+            if (!firstRow) {
+                console.log('no first row found');
+                return null;  // No rows found
+            }
 
-      // Extract "aksi" (order type) from the 3rd column (Order type: Buy/Sell)
-      const aksi = firstRow.querySelector('td:nth-child(3)')?.innerText.trim() || '';
+            // Extract "aksi" (order type) from the 3rd column (Order type: Buy/Sell)
+            const aksi = firstRow.querySelector('td:nth-child(3)')?.innerText.trim() || '';
 
-      // Extract "stockName" from the 4th column (Stock Name)
-      const stockName2 = firstRow.querySelector('td:nth-child(4) a')?.innerText.trim() || '';
+            // Extract "stockName" from the 4th column (Stock Name)
+            const stockName2 = firstRow.querySelector('td:nth-child(4) a')?.innerText.trim() || '';
 
-      // Extract "status" from the 8th column (Transaction Status)
-      const status = firstRow.querySelector('td:nth-child(8)')?.innerText.trim() || '';
+            // Extract "status" from the 8th column (Transaction Status)
+            const status = firstRow.querySelector('td:nth-child(8)')?.innerText.trim() || '';
 
-      // Extract "price" from the 6th column (Price)
-      const rawPrice = firstRow.querySelector('td:nth-child(6)')?.innerText.trim() || '';
-     // Remove "Rp" and dots from price, then parse as number
-     const price = parseInt(rawPrice.replace(/Rp|\./g, ''));
-     // Return all the extracted data
-     return { aksi, price, stockName2, status };
-   });
-   if (data && data.price) {
-      break;
-   }
-   console.log("Price is null, retrying...");
-   await delay(2000);
-  }
+            // Extract "price" from the 6th column (Price)
+            const rawPrice = firstRow.querySelector('td:nth-child(6)')?.innerText.trim() || '';
+            
+            // Remove "Rp" and dots from price, then parse as number
+            const price = parseInt(rawPrice.replace(/Rp|\./g, ''));
 
-  // Check if the transaction is today
+            // Return all the extracted data
+            return { aksi, price, stockName2, status };
+        });
 
-  // Check if the stock has already been sold
-  const isSold = data.status.toLowerCase() === 'done';  // Assuming "Done" means the stock is sold
-  console.log(`isSold: ${isSold}, price: ${data.price}, aksi: ${data.aksi}, stockName2: ${data.stockName2}, status: ${data.status}`);
+        // Ensure 'data' exists and contains a valid price
+        if (data && data.price) {
+            break;  // Successfully found the data, exit the loop
+        }
+        
+        console.log("Price is null, retrying...");
+        await delay(2000);
+    }
 
-  return { isSold, price: data.price, aksi: data.aksi, stockName2: data.stockName2, status: data.status };
+    // Ensure 'data' is defined before accessing it
+    if (data) {
+        // Check if the stock has already been sold
+        const isSold = data.status.toLowerCase() === 'done';  // Assuming "Done" means the stock is sold
+        console.log(`isSold: ${isSold}, price: ${data.price}, aksi: ${data.aksi}, stockName2: ${data.stockName2}, status: ${data.status}`);
+
+        return { isSold, price: data.price, aksi: data.aksi, stockName2: data.stockName2, status: data.status };
+    } else {
+        // If data was not successfully retrieved, log the error
+        console.error("Data is undefined or null");
+        return null;  // Or handle the error in another way
+    }
 }
+
 // Click element and wait for navigation to complete
 async function clickAndWaitForUrlEvenJustChange(page, urlPattern) {
   // Set up navigation promise before clicking
