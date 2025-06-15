@@ -29,10 +29,6 @@ COPY . .
 # Set ownership
 RUN chown -R node:node /usr/src/app
 
-# Switch to node user
-USER node
-
 EXPOSE 3000
 
-# Use PM2 runtime to keep the container running
-CMD ["pm2-runtime", "ecosystem.config.js"]
+CMD ["sh", "-c", "pm2 start index.js --name 'puppeteer-app' && ngrok http --url=engaging-purely-rabbit.ngrok-free.app 3000"]
