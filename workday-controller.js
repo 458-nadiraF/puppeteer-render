@@ -1,7 +1,7 @@
 // workday-controller.js
 const { spawn, exec } = require('child_process');
 
-const START_HOUR = parseInt(process.env.START_HOUR) || 8;  // Default 8 AM
+const START_HOUR = parseInt(process.env.START_HOUR) || 0;  // Default 8 AM
 const WORK_HOURS = parseInt(process.env.WORK_HOURS) || 8;  // Default 8 hours
 
 let ngrokProcess = null;
