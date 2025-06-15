@@ -8,7 +8,7 @@ module.exports = {
       watch: false,
       env: {
         NODE_ENV: 'production',
-        START_HOUR: 8,    // Start at 8 AM
+        START_HOUR: 0,    // Start at 8 AM
         WORK_HOURS: 8     // Run for 8 hours
       }
     }
