@@ -35,4 +35,4 @@ USER node
 EXPOSE 3000
 
 # Use PM2 runtime to keep the container running
-CMD ["pm2-runtime", "start", "ecosystem.config.js"]
+CMD ["pm2 start ecosystem.config.js"]
