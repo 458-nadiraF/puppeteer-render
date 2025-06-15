@@ -7,8 +7,17 @@ WORKDIR /usr/src/app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies and global packages
-RUN npm install -g pm2 ngrok
+USER root
+RUN chown -R node:node /usr/src/app
+USER node
+RUN npm install
+
+# Install ngrok globally
+USER root
+# Install PM2 globally to manage the Node.js app
+RUN npm install -g pm2
+RUN npm install -g ngrok
+
 
 # Configure ngrok
 ARG NGROK_AUTH_TOKEN
