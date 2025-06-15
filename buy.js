@@ -499,22 +499,17 @@ const stopLoop = async (res) => {
 const buy = async (page,browser, req,res) => {
     // Set headless mode flag (set to 'false' to show the browser)
      // Change to 'true' for headless mode
-     console.log('isBuying first',isBuying);
-     if (isBuying) {
-      return res.status(400).send('A buy operation is already in progress.');
-    }
-    isBuying=true;
     const stockName = req.query.stockName;
     // Launch Chromium (non-headless mode or headless based on the flag)
 
     try {
-        await page.waitForSelector(selectors.cariAssetSearchBox, { timeout : 10000 });
+        await page.waitForSelector(selectors.cariAssetSearchBox, {visible:true,timeout : 10000 });
         await page.$eval(selectors.cariAssetSearchBox, element => element.value='');
         const StockNameInput = await page.$(selectors.cariAssetSearchBox);
         await StockNameInput.type(stockName);
         await delay(2000);
         await clickByClass(page,'css-2b5fr2');
-        console.log('succesfully search and open stock name');
+        console.log(`[${new Date().toLocaleString()}] succesfully search and open stock name`);
     } catch (error){
         console.error('An error occurred:', error.message);
         console.error('Error Stack:', error.stack);
@@ -551,10 +546,11 @@ const buy = async (page,browser, req,res) => {
         await dayTrade100Button.click();
         const BeliButton = await page.$(selectors.BeliButton);
         await BeliButton.click();
-        await page.waitForSelector(selectors.beliPopUp);
+        await page.waitForSelector(selectors.beliPopUp,{visible:true});
         const beliPopUpButton = await page.$(selectors.beliPopUp);
         await beliPopUpButton.click();
-        console.log('succesfully beli');
+        console.log(`[${new Date().toLocaleString()}] succesfully beli`);
+        
     } catch (error){
         console.error('An error occurred:', error.message);
         console.error('Error Stack:', error.stack);
@@ -568,32 +564,41 @@ const buy = async (page,browser, req,res) => {
         // console.log(`Price: ${price.toString()}`);
         // console.log(`Aksi: ${aksi.toString()}`);
         // console.log(`Status: ${status.toString()}`);
-        if(aksi == 'Beli' && isSold){ //aksi == 'Beli' && 
-            boughtPrice = price;
+        if(aksi == 'Jual' && isSold){ //aksi == 'Beli' && 
+          console.log('check riwayat');
+          boughtPrice = price;
         }
-        console.log('boughtPrice',boughtPrice);
-        const { adjusted_loss, adjusted_gain } = setgainloss(boughtPrice, 1,1);
-        console.log('Stock Name before calling checkstoploss:', stockName);
-        const checkStopLossTrailProfit = async (stockName) => {
-          const {timeToSell_Profit, timeToSell_Loss}= await checkStopLossTrailStopFunc(page, adjusted_loss, adjusted_gain, stockName); //boolean
-          console.log('time to profit ', timeToSell_Profit);
-          console.log('time to loss ', timeToSell_Loss);
-          if (timeToSell_Profit || timeToSell_Loss) {
-            console.log('Stock Name before calling sell:', stockName);
-            await sell(page, stockName);   
-            await delay(2000); 
-            const { isSold, price, aksi, stockName2, status } = await checkingRiwayat(page);
-            if(aksi =='Jual' && isSold){
-              await delay(2000);
-              console.log('sudah terjual');
-              isBuying = false;
-              console.log('isBuying after sell',isBuying);
-              clearInterval(checkStopLossTrailStopInterval);
+        await sellJemur(page, stockName,boughtPrice);
+        // try {
+        //   const urlVercel = 'https://vercel.app/stockName='+stockName2+'?price='+boughtPrice
+        //   const response = await axios.get(urlVercel);
+        //   console.log('Request sent successfully:', response.data);
+        // } catch (error) {
+        //     console.error('Error sending request:', error.message);
+        // }
+        // const { adjusted_loss, adjusted_gain } = setgainloss(boughtPrice, 1,1);
+        // console.log('Stock Name before calling checkstoploss:', stockName);
+        // const checkStopLossTrailProfit = async (stockName) => {
+        //   const {timeToSell_Profit, timeToSell_Loss}= await checkStopLossTrailStopFunc(page, adjusted_loss, adjusted_gain, stockName); //boolean
+        //   console.log('time to profit ', timeToSell_Profit);
+        //   console.log('time to loss ', timeToSell_Loss);
+        //   if (timeToSell_Profit || timeToSell_Loss) {
+        //     console.log('Stock Name before calling sell:', stockName);
+        //     try{
+        //       await sell(page, stockName);   
+        //     } catch(error){}
+        //     await delay(2000); 
+        //     const { isSold, price, aksi, stockName2, status } = await checkingRiwayat(page);
+        //     if(aksi =='Jual' && isSold){
+        //       console.log('sudah terjual');
+        //       isBuying = false;
+        //       console.log('isBuying after sell',isBuying);
+        //       clearInterval(checkStopLossTrailStopInterval);
 
-            }
-          }
-        };
-        checkStopLossTrailStopInterval = setInterval(() => checkStopLossTrailProfit(stockName), 15000);
+        //     }
+        //   }
+        // };
+        // checkStopLossTrailStopInterval = setInterval(() => checkStopLossTrailProfit(stockName), 15000);
         // const checkStopLossInterval = setInterval(() => checkStopLoss(stockName), 5000);
         // const checkTrailProfitInterval = setInterval(() => checkTrailProfit(stockName), 12000);
         // const checkLoop = async () => {
@@ -608,22 +613,48 @@ const buy = async (page,browser, req,res) => {
     // Close the browser after completion
     // await delay(5000)
     // await browser.close();
-    
-    try{
-    const screenshotBuffer = await page.screenshot();
-
-    // Close the browser
-    // await browser.close();
-
-    // Send the screenshot in the response with the appropriate MIME type
-    res.set('Content-Type', 'image/png');
-    res.send(screenshotBuffer); // Send the screenshot as the response
-    } catch (error){
-        console.error('An error occurred:', error.message);
-        console.error('Error Stack:', error.stack);
-    }
-    // res.send('Finish');
+  
 };
+async function sellJemur(page, stockName,boughtPrice){
+    try{
+    const jualButtonTab=await page.$(selectors.jualButtonTab);
+    await jualButtonTab.click();
+    const DayTradeButton= await page.$(selectors.dayTradingButton);
+    await DayTradeButton.click();
+    const dayTrade100Button= await page.$(selectors.dayTrade25PercentBuyingPower);
+    await dayTrade100Button.click();
+     // Get the price value from the page (e.g., input field or element containing price)
+  
+    // // Parse the price into an integer (e.g., 3780 as number)
+    let priceInt = boughtPrice;   
+    // Example gain and loss values (percentage)
+  
+    console.log(`start call setgainloss ${priceInt}`);
+    console.log(`Price: ${priceInt}`);
+    const gain = 1; // 10% gain
+    const loss = 1;  // 5% loss
+    // Calculate adjusted loss and gain
+    const { adjusted_loss, adjusted_gain } = setgainloss(priceInt, loss, gain);
+  
+    
+    console.log(`Adjusted Loss: ${adjusted_loss}`);
+    console.log(`Adjusted Gain: ${adjusted_gain}`);
+    //const result = await checkbidask(page, stockName);
+    await page.$eval(selectors.inputPriceBox, element => element.value='');
+    const sellPriceInputBox = await page.$(selectors.inputPriceBox);
+    console.log('sell in price',adjusted_gain);
+    //const adjustedGainString= result.bidPrice.toString();
+    //await sellPriceInputBox.type(adjustedGainString);
+    await sellPriceInputBox.type(adjusted_gain.toString());
+    const sellButton= await page.$(selectors.jualButton);
+    await sellButton.click(); //jemur
+    await page.waitForSelector(selectors.jualPopUp,{visible:true});
+    const jualPopUpButton = await page.$(selectors.jualPopUp);
+    await jualPopUpButton.click();
+    console.log(`[${new Date().toLocaleString()}] succesfully selling`);
+    }catch(error){
+    }
+  }
 async function checkStopLossTrailStopFunc(page,adjusted_loss_input,adjusted_gain_input, stockName) {
   //cek apakah harga sekarang -1% dari beli
   //get current price (bid)
@@ -678,5 +709,17 @@ async function checkStopLossTrailStopFunc(page,adjusted_loss_input,adjusted_gain
     // No trail condition met
     return {timeToSell_Profit: false , timeToSell_Loss: false};
 }
-
-module.exports = { buy, bersiap , solvingpin , cekRiwayat , stopLoop };
+const jual = async (page,browser, req,res) => {
+    // Set headless mode flag (set to 'false' to show the browser)
+     // Change to 'true' for headless mode
+    const stockName = req.query.stockName;
+    try{
+      await sell(page, stockName);   
+    } catch(error){}
+    await delay(2000); 
+    const { isSold, price, aksi, stockName2, status } = await checkingRiwayat(page);
+    if(aksi =='Jual' && isSold){
+      console.log('sudah terjual');
+    }
+  }
+module.exports = { buy, bersiap , solvingpin , cekRiwayat , stopLoop , jual};
