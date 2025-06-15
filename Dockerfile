@@ -8,8 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install dependencies and global packages
-RUN npm ci --only=production && \
-    npm install -g pm2 ngrok
+RUN npm install -g pm2 ngrok
 
 # Configure ngrok
 ARG NGROK_AUTH_TOKEN
