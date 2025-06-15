@@ -3,6 +3,14 @@ FROM ghcr.io/puppeteer/puppeteer:19.7.2
 # Set environment variable to skip Chromium download
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
+# Set the timezone to WIB (Western Indonesia Time)
+RUN yum update -y && \
+    yum install -y tzdata cronie && \
+    ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime && \
+    echo "Asia/Jakarta" > /etc/timezone && \
+    # Enable cron service to start on container run
+    systemctl enable crond.service
+
 WORKDIR /usr/src/app
 
 # Copy package files
@@ -28,8 +36,21 @@ RUN npm ci --unsafe-perm=true
 # Copy the rest of the application files with correct ownership
 COPY --chown=node:node . .
 
+# Copy the start_ngrok.sh script into the container
+COPY start_ngrok.sh /usr/src/app/start_ngrok.sh
+
+# Make the script executable
+RUN chmod +x /usr/src/app/start_ngrok.sh
+
+# Copy the cron job file to start at 8 AM and stop at 4 PM
+COPY crontab /etc/cron.d/start-stop-ngrok
+
+# Set the correct permissions for the cron job
+RUN chmod 0644 /etc/cron.d/start-stop-ngrok && \
+    crontab /etc/cron.d/start-stop-ngrok
+
 # Expose the port for the application
 EXPOSE 3000
 
-# Use a shell script to run the commands (recommended for better flexibility)
-CMD [ "sh", "-c", "pm2 start index.js && ngrok http --url=engaging-purely-rabbit.ngrok-free.app 3000"]
+# Start cron and the container
+CMD cron && tail -f /var/log/cron.log
