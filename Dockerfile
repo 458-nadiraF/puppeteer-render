@@ -4,8 +4,10 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 WORKDIR /usr/src/app
 
-# Copy and install dependencies
+# Copy package files
 COPY package*.json ./
+
+# Install dependencies and global packages
 RUN npm ci --only=production && \
     npm install -g pm2 ngrok
 
@@ -13,18 +15,16 @@ RUN npm ci --only=production && \
 ARG NGROK_AUTH_TOKEN
 RUN ngrok config add-authtoken ${NGROK_AUTH_TOKEN}
 
-# Copy app files
+# Copy application files
 COPY . .
 
-# Make start script executable
-RUN chmod +x start.sh
-
-# Change ownership
+# Set ownership
 RUN chown -R node:node /usr/src/app
 
+# Switch to node user
 USER node
 
 EXPOSE 3000
 
-# Run the start script
-CMD ["./start_ngrok.sh"]
+# Use PM2 runtime to keep the container running
+CMD ["pm2-runtime", "start", "ecosystem.config.js"]
