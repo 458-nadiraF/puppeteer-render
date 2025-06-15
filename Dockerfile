@@ -3,13 +3,11 @@ FROM ghcr.io/puppeteer/puppeteer:19.7.2
 # Set environment variable to skip Chromium download
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# Set the timezone to WIB (Western Indonesia Time)
+# Install necessary packages (tzdata and cronie for timezone and cron)
 RUN yum update -y && \
     yum install -y tzdata cronie && \
     ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime && \
-    echo "Asia/Jakarta" > /etc/timezone && \
-    # Enable cron service to start on container run
-    systemctl enable crond.service
+    echo "Asia/Jakarta" > /etc/timezone
 
 WORKDIR /usr/src/app
 
@@ -52,5 +50,5 @@ RUN chmod 0644 /etc/cron.d/start-stop-ngrok && \
 # Expose the port for the application
 EXPOSE 3000
 
-# Start cron and the container
+# Start cron daemon manually and the container
 CMD cron && tail -f /var/log/cron.log
