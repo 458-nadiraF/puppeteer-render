@@ -1,11 +1,11 @@
 const express = require("express");
 const puppeteer= require("puppeteer");
 
-const { buy, bersiap, solvingpin , cekRiwayat , stopLoop } = require("./buy");
+const { buy, bersiap, solvingpin , cekRiwayat , stopLoop ,jual } = require("./buy");
 
 const app = express();
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 
 let browser = null;
 let page = null;
@@ -15,7 +15,7 @@ const headlessMode = false;
 // Function to launch a new browser and keep it alive for 5 minutes
 const launchBrowser = async () => {
     browser = await puppeteer.launch({
-        headless:true,
+        headless:false,
         args: [
           "--disable-setuid-sandbox",
           "--no-sandbox",
@@ -49,17 +49,28 @@ const launchBrowser = async () => {
   // }, 300000); // 5 minutes
 };
 app.get('/stop',async(req,res) =>{
-  try{
-    await stopLoop(res);
-  }catch(error){
-    console.error(error.message);
-  } try{
-    console.log('try closing server');
-    server.close();
-    console.log('server closed');
-  }catch(error){
-    console.error(error.message);
-  }
+    try{
+      await stopLoop(res);
+      if(browser){
+        browser.close();
+      }
+    }catch(error){
+      console.error(error.message);
+    }
+  })
+app.get('/jual',async(req,res) =>{
+    try{
+      if (!browser || !page) {
+        // If no browser is launched, start it
+        await launchBrowser();
+        await bersiap(page,req,res);
+      }
+      await jual(page, browser, req,res);
+      res.status(200).send("Successfully sell");
+    }catch(error){
+      console.error(error.message);
+      res.status(500).send(error.message);
+    }
 })
 app.get('/screenshot', async (req, res) => {
   try{
